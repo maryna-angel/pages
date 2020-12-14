@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.10">
+<title>Logging and Monitoring in Kubernetes</title>
+<style>
+/* Based on Flatly from Bootswatch (https://bootswatch.com/flatly/) */
+@import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
+
+/* document body (contains all content) */
+body {
+  font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.42857143;
+  color: #2c3e50;
+  background-color: #ffffff;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+/* document header (contains title etc) */
+#header {
+  width: 100%;
+}
+#header>h1 {
+  border-bottom: 1px solid #ddddd8;
+  padding-bottom: 8px;
+}
+
+/* headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.1;
+  color: inherit;
+}
+h1,
+h2,
+h3 {
+  margin-top: 21px;
+  margin-bottom: 10.5px;
+}
+h4,
+h5,
+h6 {
+  margin-top: 10.5px;
+  margin-bottom: 10.5px;
+}
+h1 {
+  font-size: 3em; 
+/*   font-size: 39px;  */
+}
+h2 {
+  font-size: 32px;
+}
+h3 {
+  font-size: 26px;
+}
+h4 {
+  font-size: 19px;
+}
+h5 {
+  font-size: 15px;
+}
+h6 {
+  font-size: 13px;
+}
+
+/* plain paragraph text */
+.paragraph {
+/*   font-family: sans-serif; */
+  margin: 0 0 10.5px;
+}
+p {
+/*   font-family: sans-serif; */
+  margin: 0 0 10.5px;
+}
+
+/* blockquote text */
+.quoteblock {
+  font-style: italic;
+}
+blockquote {
+  padding: 10.5px 21px;
+  margin: 0 0 21px;
+  font-size: 18.75px;
+  border-left: 5px solid #ecf0f1;
+}
+blockquote p:last-child,
+blockquote ul:last-child,
+blockquote ol:last-child {
+  margin-bottom: 0;
+}
+.blockquote-reverse,
+blockquote.pull-right {
+  padding-right: 15px;
+  padding-left: 0;
+  border-right: 5px solid #ecf0f1;
+  border-left: 0;
+  text-align: right;
+}
+.blockquote-reverse footer:before,
+blockquote.pull-right footer:before,
+.blockquote-reverse small:before,
+blockquote.pull-right small:before,
+.blockquote-reverse .small:before,
+blockquote.pull-right .small:before {
+  content: '';
+}
+.blockquote-reverse footer:after,
+blockquote.pull-right footer:after,
+.blockquote-reverse small:after,
+blockquote.pull-right small:after,
+.blockquote-reverse .small:after,
+blockquote.pull-right .small:after {
+  content: '\00A0 \2014';
+}
+
+/* blockquote attribution text */
+.attribution,
+.cite,
+blockquote footer,
+blockquote small,
+blockquote .small {
+  display: block;
+  font-size: 80%;
+  line-height: 1.42857143;
+  color: #b4bcc2;
+}
+.attribution:before,
+blockquote footer:before,
+blockquote small:before,
+blockquote .small:before {
+  content: '\2014 \00A0';
+}
+
+/* unordered list */
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 10.5px;
+}
+ul ul,
+ol ul,
+ul ol,
+ol ol {
+  margin-bottom: 0;
+}
+
+
+/* links */
+a {
+  color: #18bc9c;
+  background-color: transparent;
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  color: #18bc9c;
+  text-decoration: underline;
+}
+a:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+/* horizontal rules */
+hr {
+  margin-top: 21px;
+  margin-bottom: 21px;
+  border: 0;
+  border-top: 1px solid #ecf0f1;
+}
+
+/* table */
+table {
+  background-color: transparent;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 21px;
+  border-collapse: collapse;
+}
+table col[class*="col-"] {
+  position: static;
+  float: none;
+  display: table-column;
+}
+table td[class*="col-"],
+table th[class*="col-"] {
+  position: static;
+  float: none;
+  display: table-cell;
+}
+
+/* table caption */
+caption {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  color: #b4bcc2;
+  text-align: left;
+}
+
+/* table header row */
+thead {
+  border-bottom: 2px solid #ecf0f1;
+}
+
+/* table header cell */
+th {
+  text-align: left;
+  padding-left: 8px;
+}
+
+/* table footer */
+tfoot {
+  color: #807F81;
+  border-top: 1px solid #ecf0f1;
+}
+
+/* table cell */
+td {
+  border-top: 1px solid #ecf0f1;
+}
+td p {
+  margin: auto;
+  padding: 8px;
+}
+
+/* table body */
+tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+tbody > tr:hover {
+  background-color: #ecf0f1;
+}
+
+/* inline code */
+code,
+kbd,
+pre,
+samp {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+}
+kbd {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #ffffff;
+  background-color: #333333;
+  border-radius: 0;
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+kbd kbd {
+  padding: 0;
+  font-size: 100%;
+  font-weight: bold;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+pre {
+  display: block;
+  padding: 10.5px;
+  margin: 0 0 10.5px;
+  font-size: 15px;
+  line-height: 1.42857143;
+  word-break: break-all;
+  word-wrap: break-word;
+  color: #333333;
+  background-color: #f5f5f5;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+}
+pre code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  white-space: pre-wrap;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+/* image */
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/* footer section */
+#footer {
+  margin-top: 22px;
+  padding: 14px 16px;
+  color: white;
+  background-color: #2c3e50;
+}
+
+/* responsiveness fixes */
+video {
+  max-width: 100%;
+}
+
+/* table of Contents sidebar */
+#toctitle {
+  color: #ffffff;
+}
+
+#toc ul {
+  display: inline;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#toc li {
+  display: block;
+}
+
+#toc a {
+  background-color: #2c3e50;
+  float: left;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+#toc li a:hover {
+  background-color: #1a242f;
+  text-decoration: none;
+}
+
+#toc:after {
+  content: " ";
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+@media all and (max-width: 600px) {
+table {
+  width: 55vw!important;
+  font-size: 3vw;
+}
+
+</style>
+</head>
+<body class="article data-line-1">
+<div id="header">
+<h1>Logging and Monitoring in Kubernetes</h1>
+</div>
+<div id="content">
+<div class="sect1 data-line-6">
+<h2 id="_learning_outcomes">Learning Outcomes</h2>
+<div class="sectionbody">
+<div class="paragraph data-line-7">
+<p>After completing the lab, you will be able to:</p>
+</div>
+<div class="olist arabic data-line-9">
+<ol class="arabic">
+<li class="data-line-9">
+<p>Use logback to implement application level logs</p>
+</li>
+<li class="data-line-10">
+<p>Externalize log messages</p>
+</li>
+<li class="data-line-11">
+<p>Configure application to use actuators</p>
+</li>
+<li class="data-line-12">
+<p>Configure observability using probes</p>
+</li>
+<li class="data-line-13">
+<p>Access container logs for debugging and troubleshooting</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-16">
+<h2 id="_configure_logback_logging">Configure logback logging</h2>
+<div class="sectionbody">
+<div class="paragraph data-line-18">
+<p>We will make use of logback which is intendend to be a successor for slf4j. The choice for using logback also comes for the benefits that we want to use to add multiple appenders for our usecase.
+For more information on logback refer to <a href="http://logback.qos.ch" class="bare">http://logback.qos.ch</a></p>
+</div>
+<div class="olist arabic data-line-21">
+<ol class="arabic">
+<li class="data-line-21">
+<p>Add the following test method to <code>HomeApiTest</code> class</p>
+</li>
+</ol>
+</div>
+<div class="listingblock data-line-23">
+<div class="content">
+<pre>    @Test
+    public void healthTest(){
+        String body = this.restTemplate.getForObject("/actuator/health", String.class);
+        assertThat(body).contains("UP");
+    }</pre>
+</div>
+</div>
+<div class="olist arabic data-line-32">
+<ol class="arabic">
+<li class="data-line-32">
+<p>Add the acutator dependency in <code>build.gradle</code> file and verify all the test cases pass.</p>
+<div class="paragraph data-line-34">
+<p><code>implementation 'org.springframework.boot:spring-boot-starter-actuator'</code></p>
+</div>
+</li>
+<li class="data-line-36">
+<p>We dont need to add any external dependecy for logback, as it comes as a part of web starter dependency.</p>
+</li>
+<li class="data-line-38">
+<p>Create a file called <code>logback.xml</code> in <code>src/main/resources</code> directory and update the file with the configuration as below. Make sure to replace <code>student-name]</code> with your namespace name created in K8s.</p>
+<div class="listingblock data-line-44">
+<div class="title">This example contains the basic logging configuration for FILE and STDOUT appender</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">&lt;?xml version = "1.0" encoding = "UTF-8"?&gt;
+&lt;configuration&gt;
+    &lt;appender name="FILE" class="ch.qos.logback.core.FileAppender"&gt;
+        &lt;file&gt;[student-name]/logs/app.log&lt;/file&gt;
+
+        &lt;encoder&gt;
+            &lt;pattern&gt;%date %level [%thread] %logger{10} [%file:%line] %msg%n&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;%date %level [%thread] %logger{10} [%file:%line] %msg%n&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;root level="info"&gt;
+        &lt;appender-ref ref="FILE" /&gt;
+        &lt;appender-ref ref="STDOUT" /&gt;
+    &lt;/root&gt;
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-68">
+<p>Add imports to refer to logback in PageController</p>
+<div class="paragraph data-line-71">
+<p><code>import ch.qos.logback.classic.Logger;</code></p>
+</div>
+<div class="paragraph data-line-74">
+<p><code>import org.slf4j.LoggerFactory;</code></p>
+</div>
+</li>
+<li class="data-line-76">
+<p>Create Logger instance in PageController</p>
+<div class="paragraph data-line-79">
+<p><code>Logger logger =(Logger)LoggerFactory.getLogger(this.getClass());</code></p>
+</div>
+</li>
+<li class="data-line-81">
+<p>Update methods in PageController to log messages upon invocation of CRUD operations.</p>
+<div class="paragraph data-line-84">
+<p>Refer the code below for example:</p>
+</div>
+<div class="listingblock data-line-88">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java"> @GetMapping("{id}")
+    public ResponseEntity&lt;Page&gt; read(@PathVariable long id) {
+
+        logger.info("READ-INFO:Fetching page with id = " + id);
+        logger.debug("READ-DEBUG:Fetching page with id = " + id);
+
+        Page page = pageRepository.read(id);
+        if(page!=null)
+            return new ResponseEntity&lt;Page&gt;(page, HttpStatus.OK);
+        else {
+            logger.error("READ-ERROR:Could not find page with id = " + id);
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+    }</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-107">
+<p>Verify the code builds and test cases pass.</p>
+</li>
+<li class="data-line-108">
+<p>Run the code. Perform crud operations using curl or postman. Verify the log messages are logged in console and in the external log file.</p>
+</li>
+<li class="data-line-110">
+<p>Delete the log file and the directory which was generated by logback as we dont want to checkin the auto-generated directory and file as part of the code.</p>
+</li>
+<li class="data-line-112">
+<p>Update the <code>pages-deployment.yaml</code> to add <code>volume</code>, <code>volume mount</code> and <code>logger configuration</code> as below</p>
+<div class="listingblock data-line-118">
+<div class="title">Replace <code>[student-name]</code> with namespace name</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Create a volume with name -&gt; node-dir
+             type  -&gt; hostpath
+             path  -&gt;  /[student-name]
+
+Create a volume mount with name -&gt; node-dir
+              mountPath -&gt; /[student-name]
+
+Add environment variable with key:value pairs as below:
+       DEBUG: "true"
+       LOGGING_FILE_NAME: "[student-name]/logs/app.log"
+       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: debug
+       LOGGING_LEVEL_ROOT: debug</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-134">
+<p>Update the <code>pages-deployment.yaml</code> file to enable the actuator endpoints</p>
+<div class="listingblock data-line-137">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Add the environment variable:
+    MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: *</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-142">
+<p>Introduce <code>Liveness probe</code> to instruct the <code>kubelet</code> on when to kill the unhealthy container, subjected to its restart policy. Update the <code>pages-deployment.yaml</code> file to add the below spec:</p>
+<div class="listingblock data-line-145">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">  livenessProbe
+    type -&gt; httpGet
+    path -&gt; /actuator/health
+    port -&gt;  8080
+    initialDelaySeconds -&gt; 15
+    periodSeconds -&gt; 30</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-154">
+<p>Introduce  Readiness probe which indicates whether the application is ready to respond to requests. Update the pages-deployment manifest to add the below spec:</p>
+<div class="listingblock data-line-157">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">  readinessProbe
+    type -&gt; tcpSocket
+    port -&gt;  8080
+    initialDelaySeconds -&gt; 15
+    periodSeconds -&gt; 30</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-165">
+<p>Dockerize the application by creating a new tag <code>monitor</code>. Test it once on minikube with the new image.
+By now, you should be familiar with dockerizing and kubernetizing. If not, refer back to the earlier lab instructions.</p>
+</li>
+</ol>
+</div>
+<div class="sect2 data-line-169">
+<h3 id="_reference_code_snippet_for_pages_deployment_manifest">Reference Code Snippet for pages-deployment manifest</h3>
+<div class="listingblock data-line-172">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">          env:
+            - name: PAGE_CONTENT
+              valueFrom:
+                configMapKeyRef:
+                  name: pages-config-map
+                  key: PAGE_CONTENT
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://pages-mysql/pages?useSSL=false
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-pass
+                  key: password
+            - name: DEBUG
+              value: "true"
+            - name: LOGGING_FILE_NAME
+              value: "student-name/logs/app.log"
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB
+              value: debug
+            - name: LOGGING_LEVEL_ROOT
+              value: debug
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "*"
+          volumeMounts:
+            - name: node-dir
+              mountPath: /[student-name]
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+      volumes:
+        - name: node-dir
+          hostPath:
+            path: /[student-name]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-221">
+<h2 id="_viewing_logs_in_k8s">Viewing Logs in K8s</h2>
+<div class="sectionbody">
+<div class="olist arabic data-line-223">
+<ol class="arabic">
+<li class="data-line-223">
+<p>Ensure kubectl context is set to minikube.</p>
+</li>
+<li class="data-line-225">
+<p>Use <code>kubectl logs [pod-name]</code> for fetching application logs. Refer to <a href="http://kubernetes.io/docs" target="_blank" rel="noopener">http://kubernetes.io/docs</a>   for more information.</p>
+</li>
+<li class="data-line-227">
+<p>Type the command <code>minikube dashboard</code> , which can also be used to view the logs.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-229">
+<h2 id="_deploy">Deploy</h2>
+<div class="sectionbody">
+<div class="olist arabic data-line-231">
+<ol class="arabic">
+<li class="data-line-231">
+<p>Change the value of tag in <code>pipeline.yaml</code> to match the <code>pages-deployment.yaml</code> with the tag name <code>monitor</code>.</p>
+</li>
+<li class="data-line-232">
+<p>Push the code to github repository to start the pipeline, which will deploy the application to the production cluster.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-234">
+<h2 id="_debug_and_troubleshoot">Debug and troubleshoot</h2>
+<div class="sectionbody">
+<div class="olist arabic data-line-235">
+<ol class="arabic">
+<li class="data-line-235">
+<p>Delete and recreate the <code>mysql-deployment</code></p>
+<div class="listingblock data-line-241">
+<div class="title">Ensure your <code>kubectl</code> context is set to minikube.</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">kubectl config current-context
+
+kubectl config get-contexts
+
+kubectl config use-context minikube
+
+kubectl config set-context --current --namespace [student-name]
+
+kubectl delete deploy mysql
+
+kubectl apply -f deployment/mysql-deployment.yaml
+
+kubectl get deploy</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-258">
+<p>Try to access the pages application</p>
+<div class="listingblock data-line-262">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">kubectl port-forward svc/pages 8080:8080
+
+curl http://locahost:8080/pages</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-270">
+<p>What error do you see?</p>
+</li>
+<li class="data-line-272">
+<p>Find out the root cause of the problem and fix it.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-274">
+<h2 id="_advanced_usecase_challenges">Advanced usecase challenges</h2>
+<div class="sectionbody">
+<div class="olist arabic data-line-276">
+<ol class="arabic">
+<li class="data-line-276">
+<p>Implement centralized logging by aggregating the logs and persisting it from all the pods and nodes into a single datastore.</p>
+</li>
+<li class="data-line-277">
+<p>Add instrumentation such as counters and guages</p>
+</li>
+<li class="data-line-278">
+<p>Implement correlation of events by using correlation ids for all the requests</p>
+</li>
+<li class="data-line-279">
+<p>Implement service mesh pattern for designing a unified logging layer.</p>
+</li>
+<li class="data-line-280">
+<p>In order to view the logs using Kibana dashboard with EFK on minikube, enable EFK addons on minikube.</p>
+<div class="listingblock data-line-286">
+<div class="title">Ensure your kubectl context is set to minikube.</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">minikube addons list
+
+minikube addons enable efk</code></pre>
+</div>
+</div>
+<div class="paragraph data-line-293">
+<p>Explore the Kibana dashboard</p>
+</div>
+<div class="paragraph data-line-296">
+<p><code>minikube addons open efk</code></p>
+</div>
+<div class="paragraph data-line-299">
+<p>Use <code>*</code> when prompted to create index pattern.
+Select timestamp for filtering and click ok.
+From  the left side menu, select <code>Discover</code> and use queries for searching your log messages.
+Note that, this addon might consume more memory and might not start as expected which is a known issue.</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

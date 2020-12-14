@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.10">
+<title>Building a Spring Boot Application</title>
+<style>
+/* Based on Flatly from Bootswatch (https://bootswatch.com/flatly/) */
+@import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
+
+/* document body (contains all content) */
+body {
+  font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.42857143;
+  color: #2c3e50;
+  background-color: #ffffff;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+/* document header (contains title etc) */
+#header {
+  width: 100%;
+}
+#header>h1 {
+  border-bottom: 1px solid #ddddd8;
+  padding-bottom: 8px;
+}
+
+/* headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.1;
+  color: inherit;
+}
+h1,
+h2,
+h3 {
+  margin-top: 21px;
+  margin-bottom: 10.5px;
+}
+h4,
+h5,
+h6 {
+  margin-top: 10.5px;
+  margin-bottom: 10.5px;
+}
+h1 {
+  font-size: 3em; 
+/*   font-size: 39px;  */
+}
+h2 {
+  font-size: 32px;
+}
+h3 {
+  font-size: 26px;
+}
+h4 {
+  font-size: 19px;
+}
+h5 {
+  font-size: 15px;
+}
+h6 {
+  font-size: 13px;
+}
+
+/* plain paragraph text */
+.paragraph {
+/*   font-family: sans-serif; */
+  margin: 0 0 10.5px;
+}
+p {
+/*   font-family: sans-serif; */
+  margin: 0 0 10.5px;
+}
+
+/* blockquote text */
+.quoteblock {
+  font-style: italic;
+}
+blockquote {
+  padding: 10.5px 21px;
+  margin: 0 0 21px;
+  font-size: 18.75px;
+  border-left: 5px solid #ecf0f1;
+}
+blockquote p:last-child,
+blockquote ul:last-child,
+blockquote ol:last-child {
+  margin-bottom: 0;
+}
+.blockquote-reverse,
+blockquote.pull-right {
+  padding-right: 15px;
+  padding-left: 0;
+  border-right: 5px solid #ecf0f1;
+  border-left: 0;
+  text-align: right;
+}
+.blockquote-reverse footer:before,
+blockquote.pull-right footer:before,
+.blockquote-reverse small:before,
+blockquote.pull-right small:before,
+.blockquote-reverse .small:before,
+blockquote.pull-right .small:before {
+  content: '';
+}
+.blockquote-reverse footer:after,
+blockquote.pull-right footer:after,
+.blockquote-reverse small:after,
+blockquote.pull-right small:after,
+.blockquote-reverse .small:after,
+blockquote.pull-right .small:after {
+  content: '\00A0 \2014';
+}
+
+/* blockquote attribution text */
+.attribution,
+.cite,
+blockquote footer,
+blockquote small,
+blockquote .small {
+  display: block;
+  font-size: 80%;
+  line-height: 1.42857143;
+  color: #b4bcc2;
+}
+.attribution:before,
+blockquote footer:before,
+blockquote small:before,
+blockquote .small:before {
+  content: '\2014 \00A0';
+}
+
+/* unordered list */
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 10.5px;
+}
+ul ul,
+ol ul,
+ul ol,
+ol ol {
+  margin-bottom: 0;
+}
+
+
+/* links */
+a {
+  color: #18bc9c;
+  background-color: transparent;
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  color: #18bc9c;
+  text-decoration: underline;
+}
+a:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+/* horizontal rules */
+hr {
+  margin-top: 21px;
+  margin-bottom: 21px;
+  border: 0;
+  border-top: 1px solid #ecf0f1;
+}
+
+/* table */
+table {
+  background-color: transparent;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 21px;
+  border-collapse: collapse;
+}
+table col[class*="col-"] {
+  position: static;
+  float: none;
+  display: table-column;
+}
+table td[class*="col-"],
+table th[class*="col-"] {
+  position: static;
+  float: none;
+  display: table-cell;
+}
+
+/* table caption */
+caption {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  color: #b4bcc2;
+  text-align: left;
+}
+
+/* table header row */
+thead {
+  border-bottom: 2px solid #ecf0f1;
+}
+
+/* table header cell */
+th {
+  text-align: left;
+  padding-left: 8px;
+}
+
+/* table footer */
+tfoot {
+  color: #807F81;
+  border-top: 1px solid #ecf0f1;
+}
+
+/* table cell */
+td {
+  border-top: 1px solid #ecf0f1;
+}
+td p {
+  margin: auto;
+  padding: 8px;
+}
+
+/* table body */
+tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+tbody > tr:hover {
+  background-color: #ecf0f1;
+}
+
+/* inline code */
+code,
+kbd,
+pre,
+samp {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+}
+kbd {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #ffffff;
+  background-color: #333333;
+  border-radius: 0;
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+kbd kbd {
+  padding: 0;
+  font-size: 100%;
+  font-weight: bold;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+pre {
+  display: block;
+  padding: 10.5px;
+  margin: 0 0 10.5px;
+  font-size: 15px;
+  line-height: 1.42857143;
+  word-break: break-all;
+  word-wrap: break-word;
+  color: #333333;
+  background-color: #f5f5f5;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+}
+pre code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  white-space: pre-wrap;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+/* image */
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/* footer section */
+#footer {
+  margin-top: 22px;
+  padding: 14px 16px;
+  color: white;
+  background-color: #2c3e50;
+}
+
+/* responsiveness fixes */
+video {
+  max-width: 100%;
+}
+
+/* table of Contents sidebar */
+#toctitle {
+  color: #ffffff;
+}
+
+#toc ul {
+  display: inline;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#toc li {
+  display: block;
+}
+
+#toc a {
+  background-color: #2c3e50;
+  float: left;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+#toc li a:hover {
+  background-color: #1a242f;
+  text-decoration: none;
+}
+
+#toc:after {
+  content: " ";
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+@media all and (max-width: 600px) {
+table {
+  width: 55vw!important;
+  font-size: 3vw;
+}
+
+</style>
+</head>
+<body class="article data-line-1">
+<div id="header">
+<h1>Building a Spring Boot Application</h1>
+</div>
+<div id="content">
+<div class="sect1 data-line-6">
+<h2 id="_learning_outcomes">Learning Outcomes</h2>
+<div class="sectionbody">
+<div class="paragraph data-line-7">
+<p>After completing the lab, you will be able to:</p>
+</div>
+<div class="olist arabic data-line-9">
+<ol class="arabic">
+<li class="data-line-9">
+<p>Describe how to create runnable Spring Boot application</p>
+</li>
+<li class="data-line-10">
+<p>Describe how to create a controller that responds to HTTP requests</p>
+</li>
+<li class="data-line-11">
+<p>Use gradle to run gradle tasks</p>
+</li>
+</ol>
+</div>
+<div class="paragraph data-line-13">
+<p>The  <a href="https://dell-edu-lab-store.s3.ap-south-1.amazonaws.com/repository/pages.zip">pages</a> codebase contains a local Git repository with the starting points and the solutions for all the labs in this unit. Download the linked zip file and extract the codebase in the ~/workspace directory.  The extracted directory will contain a single text file as well as the (hidden) Git files. You will be building up the code in this directory bit by bit, and we have provided reference implementations at each stage identified by tags in the Git repository. Take some time to navigate through the tags and branches using the following command:</p>
+</div>
+<div class="literalblock data-line-15">
+<div class="content">
+<pre>git log --graph --decorate --oneline --all</pre>
+</div>
+</div>
+<div class="paragraph data-line-18">
+<p>Create a repository called pages in your GitHub account. Add this repository as a remote called origin of your local repository.Keep everything default, while creating the repository, don&#8217;t change anything other than default. You will push all of your work to this repository during the next few labs.</p>
+</div>
+<div class="paragraph data-line-20">
+<p>We will start by pushing the initial commit to GitHub, complete with the start and solutions tags.</p>
+</div>
+<div class="literalblock data-line-22">
+<div class="content">
+<pre>git push origin master --tags</pre>
+</div>
+</div>
+<div class="paragraph data-line-25">
+<p>We can then navigate to GitHub and view the solution tags. This is handy when you get stuck during a lab and need a little help.</p>
+</div>
+<div class="olist arabic data-line-28">
+<ol class="arabic">
+<li class="data-line-28">
+<p>Create a build.gradle file with following content</p>
+<div class="listingblock data-line-32">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">plugins {
+	id 'org.springframework.boot' version '2.3.1.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+group = 'com.example'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+test {
+	useJUnitPlatform()
+}</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-58">
+<p>Create the gradle ecosystem by using the following commands</p>
+<div class="listingblock data-line-61">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">gradle wrapper --gradle-version 6.4.1 --distribution-type all</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-65">
+<p>Open the project in Intellij</p>
+</li>
+<li class="data-line-67">
+<p>Right-click on the project, select the option to crate new directory and create <code>src/main/java</code> and <code>src/test/java</code></p>
+</li>
+<li class="data-line-68">
+<p>Create two packages <code>org.dell.kube.pages</code> and <code>org.dell.kube.pagesapi</code> under src/test/java</p>
+</li>
+<li class="data-line-69">
+<p>Create a test class called <code>HomeControllerTest</code> within package <code>org.dell.kube.pages</code> with below content</p>
+<div class="listingblock data-line-73">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">package org.dell.kube.pages;
+
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class HomeControllerTest {
+    private final String message = "YellowPages";
+
+    @Test
+    public void itSaysYellowPagesHello() throws Exception {
+        HomeController controller = new HomeController();
+
+        assertThat(controller.getPage()).contains(message);
+    }
+
+
+}</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-94">
+<p>Create a Test class called <code>HomeApiTest</code> under the package <code>org.dell.kube.pagesapi</code> with below content</p>
+<div class="listingblock data-line-97">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">package org.dell.kube.pagesapi;
+
+import org.dell.kube.pages.PageApplication;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+@SpringBootTest(classes = PageApplication.class, webEnvironment = RANDOM_PORT)
+public class HomeApiTest {
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Test
+    public void readTest() {
+        String body = this.restTemplate.getForObject("/", String.class);
+        assertThat(body).contains("YellowPages");
+    }
+}</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-128">
+<p>Create a <code>settings.gradle</code> file in the root project directory with below content</p>
+<div class="listingblock data-line-132">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">rootProject.name = 'pages'</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-136">
+<p>Create package <code>org.dell.kube.pages</code> within <code>src/main/java</code></p>
+</li>
+<li class="data-line-137">
+<p>Create class <code>PageApplication</code> within the <code>package org.dell.kube.pages</code></p>
+</li>
+<li class="data-line-138">
+<p><code>PageApplication.java</code> - Example code snippet</p>
+<div class="listingblock data-line-142">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">package org.dell.kube.pages;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+@SpringBootApplication
+public class PageApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(PageApplication.class, args);
+	}
+}</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-158">
+<p>Create class <code>HomeController</code> within the package <code>org.dell.kube.pages</code></p>
+</li>
+<li class="data-line-159">
+<p><code>HomeController.java</code> - Example code snippet</p>
+<div class="listingblock data-line-163">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">package org.dell.kube.pages;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/")
+public class HomeController {
+
+
+    @GetMapping
+    public String getPage(){
+        return "Hello from page : YellowPages";
+    }
+
+
+}</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-185">
+<p>Add <code>application.properties</code> in both test and src</p>
+</li>
+<li class="data-line-186">
+<p>Add the below content in both the properties files</p>
+<div class="listingblock data-line-190">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">spring.application.name=pages</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-194">
+<p>Build &amp; test the application</p>
+<div class="listingblock data-line-198">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">./gradlew clean build</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-202">
+<p>Run the application</p>
+<div class="listingblock data-line-206">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">./gradlew bootRun</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-210">
+<p>Access your application</p>
+<div class="listingblock data-line-214">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Browse to http://localhost:8080</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-219">
+<p>Commit your code to your github repository</p>
+<div class="listingblock data-line-223">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">git add .
+git commit -m "commit message"
+git push -u origin master</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

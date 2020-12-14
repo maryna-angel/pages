@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.10">
+<title>Building your first container</title>
+<style>
+/* Based on Flatly from Bootswatch (https://bootswatch.com/flatly/) */
+@import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
+
+/* document body (contains all content) */
+body {
+  font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.42857143;
+  color: #2c3e50;
+  background-color: #ffffff;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+/* document header (contains title etc) */
+#header {
+  width: 100%;
+}
+#header>h1 {
+  border-bottom: 1px solid #ddddd8;
+  padding-bottom: 8px;
+}
+
+/* headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.1;
+  color: inherit;
+}
+h1,
+h2,
+h3 {
+  margin-top: 21px;
+  margin-bottom: 10.5px;
+}
+h4,
+h5,
+h6 {
+  margin-top: 10.5px;
+  margin-bottom: 10.5px;
+}
+h1 {
+  font-size: 3em; 
+/*   font-size: 39px;  */
+}
+h2 {
+  font-size: 32px;
+}
+h3 {
+  font-size: 26px;
+}
+h4 {
+  font-size: 19px;
+}
+h5 {
+  font-size: 15px;
+}
+h6 {
+  font-size: 13px;
+}
+
+/* plain paragraph text */
+.paragraph {
+/*   font-family: sans-serif; */
+  margin: 0 0 10.5px;
+}
+p {
+/*   font-family: sans-serif; */
+  margin: 0 0 10.5px;
+}
+
+/* blockquote text */
+.quoteblock {
+  font-style: italic;
+}
+blockquote {
+  padding: 10.5px 21px;
+  margin: 0 0 21px;
+  font-size: 18.75px;
+  border-left: 5px solid #ecf0f1;
+}
+blockquote p:last-child,
+blockquote ul:last-child,
+blockquote ol:last-child {
+  margin-bottom: 0;
+}
+.blockquote-reverse,
+blockquote.pull-right {
+  padding-right: 15px;
+  padding-left: 0;
+  border-right: 5px solid #ecf0f1;
+  border-left: 0;
+  text-align: right;
+}
+.blockquote-reverse footer:before,
+blockquote.pull-right footer:before,
+.blockquote-reverse small:before,
+blockquote.pull-right small:before,
+.blockquote-reverse .small:before,
+blockquote.pull-right .small:before {
+  content: '';
+}
+.blockquote-reverse footer:after,
+blockquote.pull-right footer:after,
+.blockquote-reverse small:after,
+blockquote.pull-right small:after,
+.blockquote-reverse .small:after,
+blockquote.pull-right .small:after {
+  content: '\00A0 \2014';
+}
+
+/* blockquote attribution text */
+.attribution,
+.cite,
+blockquote footer,
+blockquote small,
+blockquote .small {
+  display: block;
+  font-size: 80%;
+  line-height: 1.42857143;
+  color: #b4bcc2;
+}
+.attribution:before,
+blockquote footer:before,
+blockquote small:before,
+blockquote .small:before {
+  content: '\2014 \00A0';
+}
+
+/* unordered list */
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 10.5px;
+}
+ul ul,
+ol ul,
+ul ol,
+ol ol {
+  margin-bottom: 0;
+}
+
+
+/* links */
+a {
+  color: #18bc9c;
+  background-color: transparent;
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  color: #18bc9c;
+  text-decoration: underline;
+}
+a:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+/* horizontal rules */
+hr {
+  margin-top: 21px;
+  margin-bottom: 21px;
+  border: 0;
+  border-top: 1px solid #ecf0f1;
+}
+
+/* table */
+table {
+  background-color: transparent;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 21px;
+  border-collapse: collapse;
+}
+table col[class*="col-"] {
+  position: static;
+  float: none;
+  display: table-column;
+}
+table td[class*="col-"],
+table th[class*="col-"] {
+  position: static;
+  float: none;
+  display: table-cell;
+}
+
+/* table caption */
+caption {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  color: #b4bcc2;
+  text-align: left;
+}
+
+/* table header row */
+thead {
+  border-bottom: 2px solid #ecf0f1;
+}
+
+/* table header cell */
+th {
+  text-align: left;
+  padding-left: 8px;
+}
+
+/* table footer */
+tfoot {
+  color: #807F81;
+  border-top: 1px solid #ecf0f1;
+}
+
+/* table cell */
+td {
+  border-top: 1px solid #ecf0f1;
+}
+td p {
+  margin: auto;
+  padding: 8px;
+}
+
+/* table body */
+tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+tbody > tr:hover {
+  background-color: #ecf0f1;
+}
+
+/* inline code */
+code,
+kbd,
+pre,
+samp {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+}
+kbd {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #ffffff;
+  background-color: #333333;
+  border-radius: 0;
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+kbd kbd {
+  padding: 0;
+  font-size: 100%;
+  font-weight: bold;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+pre {
+  display: block;
+  padding: 10.5px;
+  margin: 0 0 10.5px;
+  font-size: 15px;
+  line-height: 1.42857143;
+  word-break: break-all;
+  word-wrap: break-word;
+  color: #333333;
+  background-color: #f5f5f5;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+}
+pre code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  white-space: pre-wrap;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+/* image */
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/* footer section */
+#footer {
+  margin-top: 22px;
+  padding: 14px 16px;
+  color: white;
+  background-color: #2c3e50;
+}
+
+/* responsiveness fixes */
+video {
+  max-width: 100%;
+}
+
+/* table of Contents sidebar */
+#toctitle {
+  color: #ffffff;
+}
+
+#toc ul {
+  display: inline;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#toc li {
+  display: block;
+}
+
+#toc a {
+  background-color: #2c3e50;
+  float: left;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+#toc li a:hover {
+  background-color: #1a242f;
+  text-decoration: none;
+}
+
+#toc:after {
+  content: " ";
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+@media all and (max-width: 600px) {
+table {
+  width: 55vw!important;
+  font-size: 3vw;
+}
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="article data-line-1">
+<div id="header">
+<h1>Building your first container</h1>
+</div>
+<div id="content">
+<div class="sect1 data-line-8">
+<h2 id="_learning_outcomes">Learning Outcomes</h2>
+<div class="sectionbody">
+<div class="paragraph data-line-9">
+<p>After completing the lab, you will be able to:</p>
+</div>
+<div class="olist arabic data-line-11">
+<ol class="arabic">
+<li class="data-line-11">
+<p>Describe how to create Docker container</p>
+</li>
+<li class="data-line-12">
+<p>Describe how to write a docker file</p>
+</li>
+<li class="data-line-13">
+<p>Run your Spring boot application as a docker container</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-16">
+<h2 id="_dockerizing">Dockerizing</h2>
+<div class="sectionbody">
+<div class="olist arabic data-line-18">
+<ol class="arabic">
+<li class="data-line-18">
+<p>Create a new file named <code>Dockerfile</code> inside root project folder</p>
+</li>
+<li class="data-line-20">
+<p>Add instructions to download the base image. In order to run Java application using JDK 11, use - adoptopenjdk:11-jre-openj9</p>
+</li>
+<li class="data-line-21">
+<p>Add instructions to copy the dependencies &amp; build artifacts(jar/war) from the local directory into the docker image</p>
+</li>
+<li class="data-line-22">
+<p>Provide a command or an entrypoint to start the application within the docker container</p>
+<div class="listingblock data-line-28">
+<div class="title">Example snippet for reference</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">FROM adoptopenjdk:11-jre-openj9
+ARG JAR_FILE=build/libs/pages.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-37">
+<p>Building the Docker Image</p>
+<div class="paragraph data-line-40">
+<p>The next step is to build the docker image.
+To ensure that the jar file is available locally build the project once using the gradle command.</p>
+</div>
+<div class="listingblock data-line-45">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">./gradlew clean build</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-49">
+<p>Example snippet to build the docker image</p>
+<div class="listingblock data-line-53">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">docker build -t pages .</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning data-line-58">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If you get an error containing <code>Permission Denied while trying to connect to the docker daemon socket</code> you will need to execute the command
+<code>sudo chmod 666 /var/run/docker.sock</code>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li class="data-line-60">
+<p>After it finishes, run this to see the image it has built</p>
+<div class="listingblock data-line-64">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">docker image list</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-68">
+<p>Run the image as a container</p>
+<div class="listingblock data-line-72">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">docker run -p 8080:8080 pages</code></pre>
+</div>
+</div>
+<div class="paragraph data-line-77">
+<p>In the run command, we have specified that the port 8080 on the container should be mapped to the port 8080 on the Host OS.</p>
+</div>
+<div class="paragraph data-line-79">
+<p>Once the application is started, you should be able to access it at <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a></p>
+</div>
+<div class="paragraph data-line-81">
+<p>The container runs in the foreground. You can run the  container in the background using -d option.</p>
+</div>
+<div class="paragraph data-line-83">
+<p>Pressing <code>CTRL + C</code> sometimes might not stop the process. You will need to manually terminate the container.</p>
+</div>
+<div class="olist loweralpha data-line-85">
+<ol class="loweralpha" type="a">
+<li class="data-line-85">
+<p>Use <code>docker ps</code> and fetch the container id.</p>
+</li>
+<li class="data-line-86">
+<p><code>docker kill &lt;container-id&gt;</code></p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-88">
+<h2 id="_pushing_the_docker_image_to_docker_hub">Pushing the docker image to docker hub</h2>
+<div class="sectionbody">
+<div class="olist arabic data-line-90">
+<ol class="arabic">
+<li class="data-line-90">
+<p>Login with your Docker ID to push or pull images from Docker Hub.</p>
+<div class="paragraph data-line-93">
+<p>If you don&#8217;t have a Docker ID, head over to
+<a href="https://hub.docker.com" target="_blank" rel="noopener">docker hub</a> to create one, before proceeding futher.</p>
+</div>
+<div class="listingblock data-line-98">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">docker login</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-102">
+<p>Tag the image using the notation <code>docker-username/repository:tag.</code></p>
+<div class="listingblock data-line-106">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">docker tag pages &lt;docker-username&gt;/pages:1.0</code></pre>
+</div>
+</div>
+<div class="paragraph data-line-109">
+<p>Make sure to replace username with your docker id in the above command.</p>
+</div>
+</li>
+<li class="data-line-112">
+<p>Verify the newly created tagged image</p>
+<div class="listingblock data-line-115">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">docker images</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-119">
+<p>Push the image to docker hub</p>
+<div class="listingblock data-line-123">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">docker push &lt;docker-username&gt;/pages:1.0</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-127">
+<p>Pull the image from docker hub and test it on local machine. Kill the container after you test it.</p>
+<div class="listingblock data-line-131">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">docker run -p 8080:8080 &lt;docker-username&gt;/pages:1.0
+
+docker ps
+
+docker kill &lt;container-id&gt;</code></pre>
+</div>
+</div>
+</li>
+<li class="data-line-139">
+<p>Commit your code to your github repository</p>
+<div class="listingblock data-line-143">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">git add .
+git commit -m "commit message"
+git push -u origin master</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-149">
+<h2 id="_troubleshooting_guide">Troubleshooting guide</h2>
+<div class="sectionbody">
+<div class="olist arabic data-line-151">
+<ol class="arabic">
+<li class="data-line-151">
+<p><code>docker container list --all</code>.  This will show both running and stopped containers.
+Note the <code>CONTAINER-ID</code> and/or the <code>NAMES</code> of the failed container.  We&#8217;ll need it next.</p>
+</li>
+<li class="data-line-153">
+<p><code>docker container logs CONTAINER-ID</code>. This shows the console output from the failed container.</p>
+</li>
+<li class="data-line-154">
+<p>To know more about docker commands Run <code>docker -h</code></p>
+</li>
+</ol>
+</div>
+<div class="sect2 data-line-158">
+<h3 id="_resource_clean_up">Resource clean up</h3>
+<div class="olist arabic data-line-160">
+<ol class="arabic">
+<li class="data-line-160">
+<p><code>docker container list</code> - View running containers.  Note the <code>CONTAINER ID</code> and/or the <code>NAMES</code> of the running container.</p>
+</li>
+<li class="data-line-161">
+<p><code>docker container stop CONTAINER-ID</code> .This stops the container.</p>
+</li>
+<li class="data-line-162">
+<p><code>docker container list</code> - Verify that the container is now stopped.</p>
+</li>
+<li class="data-line-163">
+<p><code>docker container rm CONTAINER-ID</code> - Delete the container.</p>
+</li>
+<li class="data-line-164">
+<p><code>docker image list</code>.  The image is still there, only the container we created is removed.</p>
+</li>
+<li class="data-line-165">
+<p>Verify that the docker image exists with the right tag in <a href="https://hub.docker.com" target="_blank" rel="noopener">docker hub</a></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
