@@ -24,7 +24,7 @@ public class MySqlPageRepositoryTest {
     @BeforeEach
     public void setUp() {
 
-        repo = new MySqlPageRepository(dataSource);
+        repo = new MySqlPagesRepository(dataSource);
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute("DELETE FROM pages");
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
