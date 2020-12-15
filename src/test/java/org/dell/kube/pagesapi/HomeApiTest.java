@@ -23,6 +23,6 @@ public class HomeApiTest {
     @Test
     public void readTest() {
         String body = this.restTemplate.getForObject("/", String.class);
-        assertThat(body).contains("Dockerized");
+        assertThat(body).contains("YellowPages");
     }
 }
