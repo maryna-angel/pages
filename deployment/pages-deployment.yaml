@@ -17,7 +17,7 @@ spec:
         app: pages
     spec:
       containers:
-      - image: minexa/pages:1.2
+      - image: minexa/pages:pipeline
         name: pages
         resources: {}
         ports:
