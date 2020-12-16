@@ -63,13 +63,6 @@ spec:
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 30
-          resources:
-            requests:
-              memory: 500Mi
-              cpu: 0.25
-            limits:
-              memory: 900Mi
-              cpu: 1
       volumes:
         - name: node-dir
           hostPath:
