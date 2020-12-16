@@ -20,7 +20,7 @@ spec:
         tier: service
     spec:
       containers:
-        - image: minexa/pages:monitor
+        - image: minexa/pages:distributed
           name: pages
           ports:
             - containerPort: 8080
